@@ -101,12 +101,26 @@ app.get("/curtidas", (req, res) => {
   res.json(readCurtidas());
 });
 
-app.post("/curtir/:id", (req, res) => {
-  const id = req.params.id;
+app.post("/like-post/:postId", (req, res) => {
+  const { postId } = req.params;
+  const { userId, like } = req.body;
+  
   const curtidas = readCurtidas();
-  curtidas[id] = (curtidas[id] || 0) + 1;
+  
+  // Inicializa o contador se não existir
+  if (!curtidas[postId]) {
+    curtidas[postId] = 0;
+  }
+  
+  // Atualiza a contagem baseada na ação (like/unlike)
+  if (like) {
+    curtidas[postId]++;
+  } else if (curtidas[postId] > 0) {
+    curtidas[postId]--;
+  }
+  
   saveCurtidas(curtidas);
-  res.json({ likes: curtidas[id] });
+  res.json({ success: true, likes: curtidas[postId] });
 });
 
 // Rotas do chat
