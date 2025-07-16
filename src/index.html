@@ -18,7 +18,8 @@
     }
 
     body {
-      background: linear-gradient(135deg, #6e00ff, #ff6f61);
+      background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDw1_cQpF_nPSuc2oW71aOVcb0HuTnmeOFjw&s') no-repeat center center fixed;
+      background-size: cover;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -144,6 +145,12 @@
       width: 300px;
       display: flex;
       flex-direction: column;
+      align-items: center;
+    }
+
+    #registerModalContent img {
+      width: 100px;
+      margin-bottom: 15px;
     }
 
     #registerModalContent h3 {
@@ -168,7 +175,7 @@
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</p>
     </div>
     <div class="right">
-      <img src="styles/imagens/sp4.png" alt="Logo" />
+      <img src="https://www.etecfranciscomorato.com.br//resources/site2/sp4.png" alt="Logo" />
       <form id="loginForm">
         <input type="text" id="username" placeholder="Usuário" required />
         <input type="password" id="password" placeholder="Senha" required />
@@ -182,6 +189,7 @@
   <!-- Modal de Cadastro -->
   <div id="registerModal">
     <div id="registerModalContent">
+      <img src="https://www.etecfranciscomorato.com.br//resources/site2/sp4.png" alt="Modal Logo" />
       <h3>Cadastro</h3>
       <input type="text" id="newUsername" placeholder="Novo usuário" required />
       <input type="password" id="newPassword" placeholder="Senha" required />
@@ -191,7 +199,7 @@
     </div>
   </div>
 
-  <!-- Funções JS básicas para abrir/fechar modal -->
+  <!-- Scripts -->
   <script>
     function openModal() {
       document.getElementById("registerModal").style.display = "flex";
@@ -202,7 +210,6 @@
     }
   </script>
 
-  <!-- Script principal -->
   <script src="/scripts/login.js"></script>
 </body>
 </html>
