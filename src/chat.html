@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="pt-BR">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -9,139 +10,144 @@
       padding: 0;
       box-sizing: border-box;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }body {
-  background-color: #fff;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
+    }
 
-.header {
-  background-color: #8B0000;
-  color: white;
-  padding: 1rem;
-  text-align: center;
-  font-size: 1.5rem;
-  position: relative;
-}
+    body {
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
 
-.back-button {
-  position: absolute;
-  left: 1rem;
-  top: 1rem;
-  background-color: white;
-  color: #8B0000;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-weight: bold;
-  cursor: pointer;
-}
+    .header {
+      background-color: #8B0000;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
+      position: relative;
+    }
 
-.tabs {
-  display: flex;
-  background-color: #f2f2f2;
-  justify-content: space-around;
-  border-bottom: 1px solid #ccc;
-}
+    .back-button {
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      background-color: white;
+      color: #8B0000;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-.tab {
-  flex: 1;
-  text-align: center;
-  padding: 1rem;
-  cursor: pointer;
-  font-weight: bold;
-  color: #8B0000;
-}
+    .tabs {
+      display: flex;
+      background-color: #f2f2f2;
+      justify-content: space-around;
+      border-bottom: 1px solid #ccc;
+    }
 
-.tab.active {
-  background-color: #8B0000;
-  color: white;
-}
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 1rem;
+      cursor: pointer;
+      font-weight: bold;
+      color: #8B0000;
+    }
 
-.chat-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  overflow-y: auto;
-}
+    .tab.active {
+      background-color: #8B0000;
+      color: white;
+    }
 
-.message {
-  background-color: #f1f1f1;
-  border-radius: 10px;
-  padding: 10px;
-  margin-bottom: 10px;
-  max-width: 80%;
-  position: relative;
-}
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      overflow-y: auto;
+    }
 
-.message.user {
-  align-self: flex-end;
-  background-color: #ffe6e6;
-}
+    .message {
+      background-color: #f1f1f1;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 10px;
+      max-width: 80%;
+      position: relative;
+    }
 
-.input-container {
-  display: flex;
-  border-top: 1px solid #ccc;
-  padding: 0.5rem;
-  margin-bottom: 10px;
-}
+    .message.user {
+      align-self: flex-end;
+      background-color: #ffe6e6;
+    }
 
-.input-container input {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  margin-right: 0.5rem;
-}
+    .input-container {
+      display: flex;
+      border-top: 1px solid #ccc;
+      padding: 0.5rem;
+      margin-bottom: 10px;
+    }
 
-.input-container button {
-  background-color: #8B0000;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 10px;
-  cursor: pointer;
-}
+    .input-container input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      margin-right: 0.5rem;
+    }
 
-@media (max-width: 600px) {
-  .header {
-    font-size: 1.2rem;
-  }
+    .input-container button {
+      background-color: #8B0000;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
 
-  .tab {
-    padding: 0.7rem;
-    font-size: 0.9rem;
-  }
+    @media (max-width: 600px) {
+      .header {
+        font-size: 1.2rem;
+      }
 
-  .message {
-    font-size: 0.9rem;
-  }
+      .tab {
+        padding: 0.7rem;
+        font-size: 0.9rem;
+      }
 
-  .input-container input {
-    padding: 8px;
-  }
+      .message {
+        font-size: 0.9rem;
+      }
 
-  .input-container button {
-    padding: 8px 12px;
-  }
-}
+      .input-container input {
+        padding: 8px;
+      }
 
+      .input-container button {
+        padding: 8px 12px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="header">
     <button class="back-button" onclick="window.location.href='/index'">Voltar</button>
     Canal de Comunicação
-  </div>  <div class="tabs">
+  </div>
+  <div class="tabs">
     <div class="tab active" onclick="switchChannel('adm')">ADM</div>
     <div class="tab" onclick="switchChannel('coordenacao')">Coordenação</div>
     <div class="tab" onclick="switchChannel('gremio')">Grêmio</div>
-  </div>  <div class="chat-container" id="chatBox"></div>  <div class="input-container">
+  </div>
+  <div class="chat-container" id="chatBox"></div>
+  <div class="input-container">
     <input type="text" id="message" placeholder="Digite uma mensagem..." />
     <button onclick="sendMessage()">Enviar</button>
-  </div>  <script>
+  </div>
+  <script>
     let currentChannel = 'adm';
     const username = localStorage.getItem("username");
 
@@ -204,5 +210,6 @@
 
     loadMessages();
     setInterval(loadMessages, 5000);
-  </script></body>
+  </script>
+</body>
 </html>
