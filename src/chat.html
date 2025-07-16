@@ -2,14 +2,16 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="theme-color" content="#7a0a1a">
   <title>Chat</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
@@ -18,74 +20,75 @@
       flex-direction: column;
       height: 100vh;
       color: #333;
+      overscroll-behavior-y: contain;
     }
 
     .header {
       background: linear-gradient(135deg, #7a0a1a, #5a0000);
       color: white;
-      padding: 1.2rem 1rem;
+      padding: 1rem;
       text-align: center;
-      font-size: 1.5rem;
+      font-size: 1.2rem;
       position: relative;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       z-index: 10;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .back-button {
       position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      background-color: white;
-      color: #7a0a1a;
+      left: 0.8rem;
+      background-color: transparent;
+      color: white;
       border: none;
-      padding: 8px 15px;
-      border-radius: 20px;
-      font-weight: bold;
+      padding: 8px;
+      border-radius: 50%;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 5px;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      transition: all 0.2s ease;
     }
 
     .back-button:hover {
-      background-color: #f0f0f0;
-      transform: translateY(-50%) scale(1.02);
+      background-color: rgba(255, 255, 255, 0.1);
     }
 
     .back-button::before {
       content: "←";
+      font-size: 1.2rem;
     }
 
     .tabs {
       display: flex;
       background-color: white;
-      justify-content: space-around;
       border-bottom: 1px solid #e0e0e0;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 5;
     }
 
     .tab {
       flex: 1;
       text-align: center;
-      padding: 1rem;
+      padding: 0.8rem;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 500;
       color: #666;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
       position: relative;
-    }
-
-    .tab:hover {
-      color: #7a0a1a;
-      background-color: #f9f9f9;
     }
 
     .tab.active {
       color: #7a0a1a;
-      background-color: #fff;
+      font-weight: 600;
     }
 
     .tab.active::after {
@@ -103,123 +106,116 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding: 1rem;
+      padding: 0.8rem;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       background-color: #f9f9f9;
-      background-image: linear-gradient(#f5f5f5 1px, transparent 1px),
-                        linear-gradient(90deg, #f5f5f5 1px, transparent 1px);
-      background-size: 20px 20px;
     }
 
     .message {
       background-color: white;
-      border-radius: 15px;
-      padding: 12px 15px;
-      margin-bottom: 12px;
-      max-width: 80%;
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      max-width: 85%;
       position: relative;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
       line-height: 1.4;
       word-break: break-word;
-      animation: fadeIn 0.3s ease-out;
-    }
-
-    .message::before {
-      content: "";
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      background-color: white;
-      bottom: -5px;
-      left: 20px;
-      transform: rotate(45deg);
-      display: none;
+      font-size: 0.95rem;
+      animation: fadeIn 0.2s ease-out;
     }
 
     .message.user {
       align-self: flex-end;
       background-color: #7a0a1a;
       color: white;
-      border-bottom-right-radius: 5px;
-    }
-
-    .message.user::before {
-      right: 20px;
-      left: auto;
-      background-color: #7a0a1a;
-      display: block;
+      border-bottom-right-radius: 4px;
     }
 
     .message.other {
-      border-bottom-left-radius: 5px;
-    }
-
-    .message.other::before {
-      display: block;
+      border-bottom-left-radius: 4px;
     }
 
     .message strong {
-      font-weight: 600;
+      font-weight: 500;
       color: inherit;
     }
 
     .message-time {
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       opacity: 0.7;
-      margin-left: 8px;
+      margin-left: 6px;
+      display: inline-block;
     }
 
     .input-container {
       display: flex;
       border-top: 1px solid #e0e0e0;
-      padding: 1rem;
+      padding: 0.8rem;
       background-color: white;
-      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+      position: sticky;
+      bottom: 0;
+      z-index: 5;
     }
 
     .input-container input {
       flex: 1;
       padding: 12px 15px;
       border: 1px solid #e0e0e0;
-      border-radius: 25px;
+      border-radius: 24px;
       margin-right: 0.8rem;
-      font-size: 1rem;
-      transition: all 0.3s ease;
+      font-size: 0.95rem;
       outline: none;
+      background-color: #f5f5f5;
+      min-height: 48px;
     }
 
     .input-container input:focus {
       border-color: #7a0a1a;
-      box-shadow: 0 0 0 2px rgba(122, 10, 26, 0.1);
+      background-color: white;
     }
 
     .input-container button {
       background: linear-gradient(135deg, #7a0a1a, #5a0000);
       color: white;
       border: none;
-      padding: 12px 25px;
-      border-radius: 25px;
+      padding: 0 1.2rem;
+      border-radius: 24px;
       cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s ease;
+      font-weight: 500;
+      min-width: 60px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
     }
 
-    .input-container button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 3px 8px rgba(122, 10, 26, 0.2);
+    .input-container button:active {
+      transform: scale(0.98);
+      opacity: 0.9;
     }
 
-    .input-container button::after {
-      content: "→";
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #777;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .empty-state img {
+      width: 100px;
+      opacity: 0.5;
+      margin-bottom: 1rem;
     }
 
     @keyframes fadeIn {
       from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(8px);
       }
       to {
         opacity: 1;
@@ -227,67 +223,79 @@
       }
     }
 
+    /* Melhorias para Android */
     @media (max-width: 600px) {
       .header {
-        font-size: 1.2rem;
-        padding: 1rem;
+        padding: 0.8rem;
+        height: 56px;
+        font-size: 1.1rem;
       }
 
       .back-button {
-        padding: 6px 12px;
-        font-size: 0.9rem;
+        width: 36px;
+        height: 36px;
       }
 
       .tab {
-        padding: 0.8rem;
-        font-size: 0.9rem;
+        padding: 0.7rem 0.5rem;
+        font-size: 0.85rem;
       }
 
       .message {
         font-size: 0.9rem;
-        max-width: 85%;
-        padding: 10px 12px;
+        padding: 8px 10px;
       }
 
       .input-container {
-        padding: 0.8rem;
+        padding: 0.6rem;
       }
 
       .input-container input {
         padding: 10px 12px;
         font-size: 0.9rem;
+        min-height: 44px;
       }
 
       .input-container button {
-        padding: 10px 20px;
-        font-size: 0.9rem;
+        padding: 0 1rem;
       }
     }
 
-    /* Scrollbar personalizada */
+    /* Ajustes para dispositivos muito pequenos */
+    @media (max-width: 350px) {
+      .header {
+        font-size: 1rem;
+      }
+      
+      .tab {
+        font-size: 0.8rem;
+        padding: 0.6rem 0.3rem;
+      }
+      
+      .message {
+        max-width: 90%;
+      }
+    }
+
+    /* Scrollbar para Chrome no Android */
     ::-webkit-scrollbar {
-      width: 8px;
+      width: 4px;
     }
 
     ::-webkit-scrollbar-track {
       background: #f1f1f1;
-      border-radius: 10px;
     }
 
     ::-webkit-scrollbar-thumb {
       background: #c1c1c1;
-      border-radius: 10px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: #a8a8a8;
+      border-radius: 2px;
     }
   </style>
 </head>
 <body>
   <div class="header">
-    <button class="back-button">Voltar</button>
-    Canal de Comunicação
+    <button class="back-button"></button>
+    <span>Canal de Comunicação</span>
   </div>
 
   <div class="tabs">
@@ -296,7 +304,9 @@
     <div class="tab" onclick="switchChannel('gremio')">Grêmio</div>
   </div>
 
-  <div class="chat-container" id="chatBox"></div>
+  <div class="chat-container" id="chatBox">
+    <!-- Mensagens serão carregadas aqui -->
+  </div>
 
   <div class="input-container">
     <input type="text" id="message" placeholder="Digite uma mensagem..." />
@@ -317,40 +327,62 @@
     }
 
     async function loadMessages() {
-      const res = await fetch(`/messages/${currentChannel}`);
-      const data = await res.json();
-      const chatBox = document.getElementById("chatBox");
-      chatBox.innerHTML = "";
-
-      data.forEach((msg, index) => {
-        const div = document.createElement("div");
-        div.className = "message";
-        if (msg.username === username) {
-          div.classList.add("user");
-        } else {
-          div.classList.add("other");
+      try {
+        const res = await fetch(`/messages/${currentChannel}`);
+        const data = await res.json();
+        const chatBox = document.getElementById("chatBox");
+        
+        if (data.length === 0) {
+          chatBox.innerHTML = `
+            <div class="empty-state">
+              <img src="https://cdn-icons-png.flaticon.com/512/2346/2346066.png" alt="Nenhuma mensagem">
+              <p>Nenhuma mensagem neste canal ainda</p>
+              <p style="font-size: 0.8rem; margin-top: 0.5rem;">Seja o primeiro a enviar uma mensagem!</p>
+            </div>
+          `;
+          return;
         }
         
-        const time = msg.timestamp ? formatTime(new Date(msg.timestamp)) : formatTime(new Date());
-        
-        div.innerHTML = `
-          <strong>${msg.username}</strong>
-          <span class="message-time">${time}</span>
-          <div style="margin-top: 5px;">${msg.text}</div>
-        `;
-        
-        div.oncontextmenu = function (e) {
-          e.preventDefault();
-          if (msg.username === username) {
-            if (confirm("Deseja excluir esta mensagem?")) {
-              deleteMessage(index);
-            }
-          }
-        };
-        chatBox.appendChild(div);
-      });
+        chatBox.innerHTML = "";
 
-      chatBox.scrollTop = chatBox.scrollHeight;
+        data.forEach((msg, index) => {
+          const div = document.createElement("div");
+          div.className = "message";
+          if (msg.username === username) {
+            div.classList.add("user");
+          } else {
+            div.classList.add("other");
+          }
+          
+          const time = msg.timestamp ? formatTime(new Date(msg.timestamp)) : formatTime(new Date());
+          
+          div.innerHTML = `
+            <strong>${msg.username}</strong>
+            <span class="message-time">${time}</span>
+            <div style="margin-top: 4px;">${msg.text}</div>
+          `;
+          
+          div.oncontextmenu = function (e) {
+            e.preventDefault();
+            if (msg.username === username) {
+              if (confirm("Deseja excluir esta mensagem?")) {
+                deleteMessage(index);
+              }
+            }
+          };
+          chatBox.appendChild(div);
+        });
+
+        // Rolagem suave para a última mensagem
+        setTimeout(() => {
+          chatBox.scrollTo({
+            top: chatBox.scrollHeight,
+            behavior: 'smooth'
+          });
+        }, 100);
+      } catch (error) {
+        console.error("Erro ao carregar mensagens:", error);
+      }
     }
 
     async function sendMessage() {
@@ -358,18 +390,28 @@
       const text = input.value.trim();
       if (!text) return;
 
-      await fetch(`/messages/${currentChannel}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          username, 
-          text,
-          timestamp: new Date().toISOString()
-        }),
-      });
+      try {
+        await fetch(`/messages/${currentChannel}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            username, 
+            text,
+            timestamp: new Date().toISOString()
+          }),
+        });
 
-      input.value = "";
-      loadMessages();
+        input.value = "";
+        loadMessages();
+        
+        // Foca no input novamente após enviar
+        setTimeout(() => {
+          input.focus();
+        }, 50);
+      } catch (error) {
+        console.error("Erro ao enviar mensagem:", error);
+        alert("Erro ao enviar mensagem. Tente novamente.");
+      }
     }
 
     function switchChannel(channel) {
@@ -380,13 +422,18 @@
     }
 
     async function deleteMessage(index) {
-      await fetch(`/messages/${currentChannel}/${index}`, {
-        method: "DELETE",
-      });
-      loadMessages();
+      try {
+        await fetch(`/messages/${currentChannel}/${index}`, {
+          method: "DELETE",
+        });
+        loadMessages();
+      } catch (error) {
+        console.error("Erro ao deletar mensagem:", error);
+        alert("Erro ao deletar mensagem. Tente novamente.");
+      }
     }
 
-    // ✅ Enviar com Enter
+    // Enviar com Enter
     document.getElementById("message").addEventListener("keydown", function (e) {
       if (e.key === "Enter") {
         sendMessage();
@@ -398,8 +445,19 @@
       window.location.href = '/index.html';
     });
 
+    // Focar no input quando a página carrega
+    document.addEventListener("DOMContentLoaded", function() {
+      const input = document.getElementById("message");
+      setTimeout(() => {
+        input.focus();
+      }, 300);
+    });
+
+    // Carregar mensagens inicialmente
     loadMessages();
-    setInterval(loadMessages, 5000);
+    
+    // Atualizar mensagens periodicamente
+    setInterval(loadMessages, 3000);
   </script>
 </body>
 </html>
