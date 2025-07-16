@@ -186,7 +186,8 @@
     }
 
     async function sendMessage() {
-      const text = document.getElementById("message").value.trim();
+      const input = document.getElementById("message");
+      const text = input.value.trim();
       if (!text) return;
 
       await fetch(`/messages/${currentChannel}`, {
@@ -195,7 +196,7 @@
         body: JSON.stringify({ username, text }),
       });
 
-      document.getElementById("message").value = "";
+      input.value = "";
       loadMessages();
     }
 
@@ -212,6 +213,13 @@
       });
       loadMessages();
     }
+
+    // ✅ Enviar com Enter
+    document.getElementById("message").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        sendMessage();
+      }
+    });
 
     loadMessages();
     setInterval(loadMessages, 5000);
