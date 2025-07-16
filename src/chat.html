@@ -317,6 +317,7 @@
     let currentChannel = 'adm';
     const user = JSON.parse(sessionStorage.getItem("loggedInUser"));
     const username = user?.username;
+    let lastMessageTimestamp = 0;
 
     if (!username) {
       window.location.href = "/index.html";
@@ -326,12 +327,22 @@
       return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
-    async function loadMessages() {
+    async function loadMessages(initialLoad = false) {
       try {
         const res = await fetch(`/messages/${currentChannel}`);
         const data = await res.json();
         const chatBox = document.getElementById("chatBox");
         
+        // Verifica se há novas mensagens
+        const newestMessage = data[data.length - 1];
+        const newestTimestamp = newestMessage ? new Date(newestMessage.timestamp).getTime() : 0;
+        
+        if (newestTimestamp <= lastMessageTimestamp && !initialLoad) {
+          return; // Não há mensagens novas, não atualiza
+        }
+        
+        lastMessageTimestamp = newestTimestamp;
+
         if (data.length === 0) {
           chatBox.innerHTML = `
             <div class="empty-state">
@@ -342,6 +353,9 @@
           `;
           return;
         }
+        
+        // Salva a posição de scroll antes de atualizar
+        const wasScrolledToBottom = chatBox.scrollHeight - chatBox.scrollTop <= chatBox.clientHeight + 100;
         
         chatBox.innerHTML = "";
 
@@ -373,13 +387,15 @@
           chatBox.appendChild(div);
         });
 
-        // Rolagem suave para a última mensagem
-        setTimeout(() => {
-          chatBox.scrollTo({
-            top: chatBox.scrollHeight,
-            behavior: 'smooth'
-          });
-        }, 100);
+        // Restaura a posição de scroll se estava no fundo
+        if (wasScrolledToBottom || initialLoad) {
+          setTimeout(() => {
+            chatBox.scrollTo({
+              top: chatBox.scrollHeight,
+              behavior: initialLoad ? 'auto' : 'smooth'
+            });
+          }, 100);
+        }
       } catch (error) {
         console.error("Erro ao carregar mensagens:", error);
       }
@@ -418,7 +434,8 @@
       currentChannel = channel;
       document.querySelectorAll(".tab").forEach((el) => el.classList.remove("active"));
       event.target.classList.add("active");
-      loadMessages();
+      lastMessageTimestamp = 0; // Reseta o timestamp ao mudar de canal
+      loadMessages(true);
     }
 
     async function deleteMessage(index) {
@@ -440,9 +457,9 @@
       }
     });
 
-    // Botão voltar
+    // Botão voltar - alterado para news.html
     document.querySelector(".back-button").addEventListener("click", function() {
-      window.location.href = '/index.html';
+      window.location.href = '/news.html';
     });
 
     // Focar no input quando a página carrega
@@ -451,13 +468,13 @@
       setTimeout(() => {
         input.focus();
       }, 300);
+      
+      // Carrega mensagens inicialmente
+      loadMessages(true);
     });
 
-    // Carregar mensagens inicialmente
-    loadMessages();
-    
-    // Atualizar mensagens periodicamente
-    setInterval(loadMessages, 3000);
+    // Atualizar mensagens periodicamente (verifica a cada 3 segundos)
+    setInterval(() => loadMessages(), 3000);
   </script>
 </body>
 </html>
