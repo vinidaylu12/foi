@@ -134,25 +134,30 @@
 </head>
 <body>
   <div class="header">
-    <button class="back-button" onclick="window.location.href='/index'">Voltar</button>
+    <button class="back-button" onclick="window.location.href='/index.html'">Voltar</button>
     Canal de Comunicação
   </div>
+
   <div class="tabs">
     <div class="tab active" onclick="switchChannel('adm')">ADM</div>
     <div class="tab" onclick="switchChannel('coordenacao')">Coordenação</div>
     <div class="tab" onclick="switchChannel('gremio')">Grêmio</div>
   </div>
+
   <div class="chat-container" id="chatBox"></div>
+
   <div class="input-container">
     <input type="text" id="message" placeholder="Digite uma mensagem..." />
     <button onclick="sendMessage()">Enviar</button>
   </div>
+
   <script>
     let currentChannel = 'adm';
-    const username = localStorage.getItem("username");
+    const user = JSON.parse(sessionStorage.getItem("loggedInUser"));
+    const username = user?.username;
 
     if (!username) {
-      window.location.href = "/index";
+      window.location.href = "/index.html";
     }
 
     async function loadMessages() {
