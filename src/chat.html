@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<!DOCTYPE html><html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -10,195 +9,165 @@
       padding: 0;
       box-sizing: border-box;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+    }body {
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
 
-    body {
-      background-color: #fff;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
+.header {
+  background-color: #8B0000;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  font-size: 1.5rem;
+  position: relative;
+}
 
-    .header {
-      background-color: #8B0000;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-      font-size: 1.5rem;
-    }
+.back-button {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  background-color: white;
+  color: #8B0000;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
 
-    .tabs {
-      display: flex;
-      background-color: #f2f2f2;
-      justify-content: space-around;
-      border-bottom: 1px solid #ccc;
-    }
+.tabs {
+  display: flex;
+  background-color: #f2f2f2;
+  justify-content: space-around;
+  border-bottom: 1px solid #ccc;
+}
 
-    .tab {
-      flex: 1;
-      text-align: center;
-      padding: 1rem;
-      cursor: pointer;
-      font-weight: bold;
-      color: #8B0000;
-    }
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  color: #8B0000;
+}
 
-    .tab.active {
-      background-color: #8B0000;
-      color: white;
-    }
+.tab.active {
+  background-color: #8B0000;
+  color: white;
+}
 
-    .chat-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 1rem;
-      overflow-y: auto;
-    }
+.chat-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  overflow-y: auto;
+}
 
-    .message {
-      background-color: #f1f1f1;
-      border-radius: 10px;
-      padding: 10px;
-      margin-bottom: 10px;
-      max-width: 80%;
-      position: relative;
-    }
+.message {
+  background-color: #f1f1f1;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  max-width: 80%;
+  position: relative;
+}
 
-    .message strong {
-      color: #8B0000;
-    }
+.message.user {
+  align-self: flex-end;
+  background-color: #ffe6e6;
+}
 
-    .input-container {
-      display: flex;
-      border-top: 1px solid #ccc;
-      padding: 0.5rem;
-      margin-bottom: 8px;
-    }
+.input-container {
+  display: flex;
+  border-top: 1px solid #ccc;
+  padding: 0.5rem;
+  margin-bottom: 10px;
+}
 
-    .input-container input {
-      flex: 1;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      margin-right: 0.5rem;
-    }
+.input-container input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin-right: 0.5rem;
+}
 
-    .input-container button {
-      background-color: #8B0000;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 10px;
-      cursor: pointer;
-    }
+.input-container button {
+  background-color: #8B0000;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+}
 
-    .back-button {
-      position: absolute;
-      left: 10px;
-      top: 10px;
-      background: transparent;
-      border: none;
-      color: white;
-      font-size: 1rem;
-      cursor: pointer;
-      text-decoration: underline;
-    }
+@media (max-width: 600px) {
+  .header {
+    font-size: 1.2rem;
+  }
 
-    #deleteModal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
-    }
+  .tab {
+    padding: 0.7rem;
+    font-size: 0.9rem;
+  }
 
-    #deleteModalContent {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      text-align: center;
-    }
+  .message {
+    font-size: 0.9rem;
+  }
 
-    @media (max-width: 600px) {
-      .header {
-        font-size: 1.2rem;
-      }
-      .tab {
-        padding: 0.7rem;
-        font-size: 0.9rem;
-      }
-      .message {
-        font-size: 0.9rem;
-      }
-      .input-container input {
-        padding: 8px;
-      }
-      .input-container button {
-        padding: 8px 12px;
-      }
-    }
+  .input-container input {
+    padding: 8px;
+  }
+
+  .input-container button {
+    padding: 8px 12px;
+  }
+}
+
   </style>
 </head>
 <body>
   <div class="header">
-    <button class="back-button" onclick="window.location.href='/index'">← Notícias</button>
+    <button class="back-button" onclick="window.location.href='/index'">Voltar</button>
     Canal de Comunicação
-  </div>
-
-  <div class="tabs">
+  </div>  <div class="tabs">
     <div class="tab active" onclick="switchChannel('adm')">ADM</div>
     <div class="tab" onclick="switchChannel('coordenacao')">Coordenação</div>
     <div class="tab" onclick="switchChannel('gremio')">Grêmio</div>
-  </div>
-
-  <div class="chat-container" id="chatBox"></div>
-
-  <div class="input-container">
+  </div>  <div class="chat-container" id="chatBox"></div>  <div class="input-container">
     <input type="text" id="message" placeholder="Digite uma mensagem..." />
     <button onclick="sendMessage()">Enviar</button>
-  </div>
-
-  <!-- Modal de confirmação -->
-  <div id="deleteModal">
-    <div id="deleteModalContent">
-      <p>Deseja excluir esta mensagem?</p>
-      <button onclick="confirmDelete()">Sim</button>
-      <button onclick="closeDeleteModal()">Cancelar</button>
-    </div>
-  </div>
-
-  <script>
+  </div>  <script>
     let currentChannel = 'adm';
-    let selectedMessageIndex = null;
-    let messagesData = [];
     const username = localStorage.getItem("username");
+
+    if (!username) {
+      window.location.href = "/index";
+    }
 
     async function loadMessages() {
       const res = await fetch(`/messages/${currentChannel}`);
       const data = await res.json();
-      messagesData = data;
-
       const chatBox = document.getElementById("chatBox");
       chatBox.innerHTML = "";
 
-      data.forEach((msg, i) => {
+      data.forEach((msg, index) => {
         const div = document.createElement("div");
         div.className = "message";
+        if (msg.username === username) div.classList.add("user");
         div.innerHTML = `<strong>${msg.username}:</strong> ${msg.text}`;
-        
-        // Se for do usuário logado, permitir exclusão
-        if (msg.username === username) {
-          div.addEventListener("touchstart", () => openDeleteModal(i));
-          div.addEventListener("mousedown", () => {
-            timeout = setTimeout(() => openDeleteModal(i), 700);
-          });
-          div.addEventListener("mouseup", () => clearTimeout(timeout));
-          div.addEventListener("mouseleave", () => clearTimeout(timeout));
-        }
-
+        div.oncontextmenu = function (e) {
+          e.preventDefault();
+          if (msg.username === username) {
+            if (confirm("Deseja excluir esta mensagem?")) {
+              deleteMessage(index);
+            }
+          }
+        };
         chatBox.appendChild(div);
       });
 
@@ -207,7 +176,7 @@
 
     async function sendMessage() {
       const text = document.getElementById("message").value.trim();
-      if (!username || !text) return;
+      if (!text) return;
 
       await fetch(`/messages/${currentChannel}`, {
         method: "POST",
@@ -226,26 +195,14 @@
       loadMessages();
     }
 
-    function openDeleteModal(index) {
-      selectedMessageIndex = index;
-      document.getElementById("deleteModal").style.display = "flex";
-    }
-
-    function closeDeleteModal() {
-      document.getElementById("deleteModal").style.display = "none";
-      selectedMessageIndex = null;
-    }
-
-    async function confirmDelete() {
-      if (selectedMessageIndex !== null) {
-        await fetch(`/messages/${currentChannel}/${selectedMessageIndex}`, { method: "DELETE" });
-        closeDeleteModal();
-        loadMessages();
-      }
+    async function deleteMessage(index) {
+      await fetch(`/messages/${currentChannel}/${index}`, {
+        method: "DELETE",
+      });
+      loadMessages();
     }
 
     loadMessages();
     setInterval(loadMessages, 5000);
-  </script>
-</body>
+  </script></body>
 </html>
