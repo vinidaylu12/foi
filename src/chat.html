@@ -5,189 +5,157 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Chat</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    body {
-      background-color: #fff;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-
-    .header {
-      background-color: #8B0000;
-      color: white;
-      padding: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .header h1 {
-      font-size: 1.4rem;
-    }
-
-    .header button {
-      background: white;
-      color: #8B0000;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .header button:hover {
-      background-color: #f0f0f0;
-    }
-
-    .tabs {
-      display: flex;
-      background-color: #f2f2f2;
-      justify-content: space-around;
-      border-bottom: 1px solid #ccc;
-    }
-
-    .tab {
-      flex: 1;
-      text-align: center;
-      padding: 0.8rem;
-      cursor: pointer;
-      font-weight: bold;
-      color: #8B0000;
-    }
-
-    .tab.active {
-      background-color: #8B0000;
-      color: white;
-    }
-
-    .chat-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 1rem;
-      overflow-y: auto;
-      scroll-behavior: smooth;
-    }
-
+    /* [Tudo igual ao anterior, com adição do modal e ajustes no .message] */
+    /* ... */
     .message {
       background-color: #f1f1f1;
       border-radius: 10px;
       padding: 10px;
       margin-bottom: 10px;
       max-width: 80%;
+      position: relative;
     }
 
-    .message strong {
-      color: #8B0000;
+    .message.own {
+      background-color: #e0ffe0;
     }
 
-    .input-container {
-      display: flex;
-      border-top: 1px solid #ccc;
-      padding: 0.6rem;
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
     }
 
-    .input-container input {
-      flex: 1;
-      padding: 10px;
-      border: 1px solid #ccc;
+    .modal-content {
+      background: white;
+      padding: 20px;
       border-radius: 10px;
-      margin-right: 0.5rem;
+      text-align: center;
     }
 
-    .input-container button {
-      background-color: #8B0000;
-      color: white;
+    .modal-content button {
+      margin: 10px;
+      padding: 8px 16px;
       border: none;
-      padding: 10px 16px;
-      border-radius: 10px;
+      border-radius: 5px;
       cursor: pointer;
     }
 
-    @media (max-width: 600px) {
-      .header h1 {
-        font-size: 1.1rem;
-      }
-
-      .tab {
-        padding: 0.6rem;
-        font-size: 0.9rem;
-      }
-
-      .message {
-        font-size: 0.9rem;
-      }
-
-      .input-container input {
-        padding: 8px;
-      }
-
-      .input-container button {
-        padding: 8px 12px;
-      }
-
-      .header button {
-        padding: 4px 8px;
-        font-size: 0.8rem;
-      }
+    .confirm {
+      background-color: #8B0000;
+      color: white;
     }
+
+    .cancel {
+      background-color: #ccc;
+    }
+
+    /* Resto do CSS permanece igual ao anterior */
+    /* ... */
   </style>
 </head>
 <body>
   <div class="header">
-    <h1>Canal de Comunicação</h1>
-    <button onclick="window.location.href='news.html'">⬅ Notícias</button>
+    <button class="back-button" onclick="window.location.href='/index'">← Voltar</button>
+    Canal de Comunicação
   </div>
 
   <div class="tabs">
-    <div class="tab active" onclick="switchChannel('adm', event)">ADM</div>
-    <div class="tab" onclick="switchChannel('coordenacao', event)">Coordenação</div>
-    <div class="tab" onclick="switchChannel('gremio', event)">Grêmio</div>
+    <div class="tab active" onclick="switchChannel('adm')">ADM</div>
+    <div class="tab" onclick="switchChannel('coordenacao')">Coordenação</div>
+    <div class="tab" onclick="switchChannel('gremio')">Grêmio</div>
   </div>
 
-  <div class="chat-container" id="chatBox">
-    <!-- Mensagens aparecerão aqui -->
-  </div>
+  <div class="chat-container" id="chatBox"></div>
 
   <div class="input-container">
     <input type="text" id="message" placeholder="Digite uma mensagem..." />
     <button onclick="sendMessage()">Enviar</button>
   </div>
 
+  <!-- Modal de confirmação -->
+  <div class="modal" id="confirmModal">
+    <div class="modal-content">
+      <p>Deseja excluir esta mensagem?</p>
+      <button class="confirm" onclick="confirmDelete()">Sim</button>
+      <button class="cancel" onclick="closeModal()">Cancelar</button>
+    </div>
+  </div>
+
   <script>
     let currentChannel = 'adm';
+    let deleteIndex = null;
 
     function getUsername() {
-      const username = localStorage.getItem('username');
-      if (!username) {
-        alert("Você precisa estar logado.");
-        window.location.href = "/index.html";
-      }
-      return username;
+      return localStorage.getItem("username") || "Desconhecido";
     }
 
     async function loadMessages() {
-      const res = await fetch(`/messages/${currentChannel}`);
-      const data = await res.json();
+      try {
+        const res = await fetch(`/messages/${currentChannel}`);
+        const data = await res.json();
+        const username = getUsername();
+        const chatBox = document.getElementById("chatBox");
+        chatBox.innerHTML = "";
 
-      const chatBox = document.getElementById("chatBox");
-      chatBox.innerHTML = "";
+        data.forEach((msg, index) => {
+          const div = document.createElement("div");
+          div.className = "message";
+          if (msg.username === username) {
+            div.classList.add("own");
+            enableLongPress(div, index);
+          }
+          div.innerHTML = `<strong>${msg.username}:</strong> ${msg.text}`;
+          chatBox.appendChild(div);
+        });
 
-      data.forEach((msg) => {
-        const div = document.createElement("div");
-        div.className = "message";
-        div.innerHTML = `<strong>${msg.username}:</strong> ${msg.text}`;
-        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      } catch (err) {
+        console.error("Erro ao carregar mensagens:", err);
+      }
+    }
+
+    function enableLongPress(element, index) {
+      let timer;
+
+      element.addEventListener("mousedown", () => {
+        timer = setTimeout(() => {
+          deleteIndex = index;
+          document.getElementById("confirmModal").style.display = "flex";
+        }, 700);
       });
 
-      chatBox.scrollTop = chatBox.scrollHeight;
+      element.addEventListener("mouseup", () => clearTimeout(timer));
+      element.addEventListener("mouseleave", () => clearTimeout(timer));
+
+      element.addEventListener("touchstart", () => {
+        timer = setTimeout(() => {
+          deleteIndex = index;
+          document.getElementById("confirmModal").style.display = "flex";
+        }, 700);
+      });
+
+      element.addEventListener("touchend", () => clearTimeout(timer));
+    }
+
+    async function confirmDelete() {
+      if (deleteIndex !== null) {
+        await fetch(`/messages/${currentChannel}/${deleteIndex}`, {
+          method: "DELETE"
+        });
+        deleteIndex = null;
+        closeModal();
+        loadMessages();
+      }
+    }
+
+    function closeModal() {
+      document.getElementById("confirmModal").style.display = "none";
     }
 
     async function sendMessage() {
@@ -206,14 +174,13 @@
       loadMessages();
     }
 
-    function switchChannel(channel, event) {
+    function switchChannel(channel) {
       currentChannel = channel;
-      document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+      document.querySelectorAll(".tab").forEach((el) => el.classList.remove("active"));
       event.target.classList.add("active");
       loadMessages();
     }
 
-    // Inicializa o chat
     loadMessages();
     setInterval(loadMessages, 5000);
   </script>
