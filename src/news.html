@@ -123,9 +123,21 @@
 
         .news-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 20px;
             padding: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .news-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .news-item {
@@ -136,10 +148,13 @@
             animation: fadeInUp 0.5s ease forwards;
             opacity: 0;
             position: relative;
+            cursor: pointer;
+            border: 1px solid #eee;
         }
 
         .news-item:hover {
             transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         @keyframes fadeInUp {
@@ -157,6 +172,7 @@
             width: 100%;
             height: 180px;
             object-fit: cover;
+            border-bottom: 1px solid #eee;
         }
 
         .news-content {
@@ -186,6 +202,10 @@
             font-size: 14px;
             color: #666;
             margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .news-meta {
@@ -207,6 +227,7 @@
             position: absolute;
             top: 10px;
             right: 10px;
+            z-index: 2;
         }
 
         .delete-button:hover {
@@ -253,6 +274,7 @@
             box-shadow: 0 2px 8px rgba(165, 42, 42, 0.1);
         }
 
+        /* Modal de publicação */
         .modal {
             display: none;
             position: fixed;
@@ -322,6 +344,82 @@
             border: 1px solid #ddd;
         }
 
+        /* Modal de visualização da notícia */
+        .news-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .news-modal-content {
+            background: white;
+            max-width: 800px;
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .news-modal-header {
+            padding: 20px;
+            background: #a52a2a;
+            color: white;
+            position: relative;
+        }
+
+        .news-modal-header h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .close-news-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .news-modal-body {
+            padding: 20px;
+        }
+
+        .news-modal-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .news-modal-text {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .news-modal-meta {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            color: #888;
+            font-size: 14px;
+        }
+
         .footer {
             background-color: #333;
             color: #fff;
@@ -355,10 +453,6 @@
                 overflow-x: auto;
                 padding-bottom: 5px;
                 -webkit-overflow-scrolling: touch;
-            }
-            
-            .news-grid {
-                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -422,6 +516,7 @@
         </div>
     </div>
 
+    <!-- Modal para publicar notícia -->
     <div class="modal" id="publishModal">
         <div class="modal-content">
             <h2><i class="fas fa-plus-circle"></i> Publicar Notícia</h2>
@@ -431,6 +526,24 @@
             <div class="modal-buttons">
                 <button class="publish-button" onclick="publishNews()"><i class="fas fa-paper-plane"></i> Publicar</button>
                 <button class="cancel-button" onclick="closeModal()"><i class="fas fa-times"></i> Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para visualizar notícia -->
+    <div class="news-modal" id="newsModal">
+        <div class="news-modal-content">
+            <div class="news-modal-header">
+                <h2 id="modalNewsTitle">Título da Notícia</h2>
+                <button class="close-news-modal" onclick="closeNewsModal()">&times;</button>
+            </div>
+            <div class="news-modal-body">
+                <img id="modalNewsImage" src="" alt="Imagem da notícia" class="news-modal-image">
+                <p id="modalNewsText" class="news-modal-text">Texto completo da notícia...</p>
+                <div class="news-modal-meta">
+                    <span><i class="far fa-thumbs-up"></i> <span id="modalLikesCount">0 curtidas</span></span>
+                    <span><i class="far fa-clock"></i> Hoje</span>
+                </div>
             </div>
         </div>
     </div>
@@ -447,6 +560,7 @@
         };
 
         let allNews = []; // para guardar todas as notícias carregadas
+        let currentLikes = {}; // para guardar as curtidas
 
         document.addEventListener("DOMContentLoaded", () => {
             const user = JSON.parse(sessionStorage.getItem("loggedInUser"));
@@ -471,6 +585,7 @@
             fetch("/curtidas")
                 .then(res => res.json())
                 .then(curtidas => {
+                    currentLikes = curtidas;
                     Object.keys(curtidas).forEach(id => {
                         const span = document.getElementById(`likes_${id}_count`);
                         if (span) {
@@ -486,7 +601,7 @@
                 fetch("/curtidas").then(res => res.json())
             ]).then(([images, curtidas]) => {
                 allNews = images; // guardo todas as notícias
-
+                currentLikes = curtidas;
                 renderNews(images, curtidas);
             });
         }
@@ -515,25 +630,52 @@
                             <span><i class="far fa-clock"></i> Hoje</span>
                         </div>
                     </div>
-                    ${isAdmin() ? `<button class="delete-button" onclick="deleteImage('${image.id}')"><i class="fas fa-trash"></i> Excluir</button>` : ""}
+                    ${isAdmin() ? `<button class="delete-button" onclick="deleteImage('${image.id}', event)"><i class="fas fa-trash"></i> Excluir</button>` : ""}
                 `;
+
+                // Adiciona evento de clique para abrir a notícia
+                newsItem.addEventListener('click', (e) => {
+                    // Verifica se o clique não foi no botão de excluir
+                    if (!e.target.closest('.delete-button')) {
+                        openNewsModal(image);
+                    }
+                });
 
                 newsContainer.appendChild(newsItem);
             });
         }
 
+        function openNewsModal(news) {
+            const modal = document.getElementById("newsModal");
+            document.getElementById("modalNewsTitle").textContent = news.title || "Título da Notícia";
+            
+            if (news.url) {
+                document.getElementById("modalNewsImage").src = news.url;
+                document.getElementById("modalNewsImage").style.display = "block";
+            } else {
+                document.getElementById("modalNewsImage").style.display = "none";
+            }
+            
+            document.getElementById("modalNewsText").innerHTML = formatText(news.caption || "Descrição da notícia.");
+            document.getElementById("modalLikesCount").textContent = `${currentLikes[news.id] || 0} curtidas`;
+            
+            modal.style.display = "flex";
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeNewsModal() {
+            document.getElementById("newsModal").style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+
         function filterNews(searchTerm) {
             searchTerm = searchTerm.toLowerCase();
 
-            fetch("/curtidas")
-                .then(res => res.json())
-                .then(curtidas => {
-                    const filtered = allNews.filter(news =>
-                        (news.title || "").toLowerCase().includes(searchTerm) ||
-                        (news.caption || "").toLowerCase().includes(searchTerm)
-                    );
-                    renderNews(filtered, curtidas);
-                });
+            const filtered = allNews.filter(news =>
+                (news.title || "").toLowerCase().includes(searchTerm) ||
+                (news.caption || "").toLowerCase().includes(searchTerm)
+            );
+            renderNews(filtered, currentLikes);
         }
 
         function publishNews() {
@@ -567,12 +709,15 @@
         }
 
         function formatText(text) {
+            // Transforma URLs em links clicáveis
             return text.replace(/(https?:\/\/[^\s]+)/g, (url) => {
                 return `<a href="${url}" target="_blank">${url}</a>`;
             });
         }
 
-        window.deleteImage = function(id) {
+        window.deleteImage = function(id, event) {
+            event.stopPropagation(); // Impede que o clique no botão abra a notícia
+            
             if (!confirm("Tem certeza que deseja excluir esta notícia?")) return;
 
             fetch(`/delete-image/${id}`, { method: 'DELETE' })
@@ -626,6 +771,13 @@
             document.querySelector('.top-nav a.active').classList.remove('active');
             event.target.classList.add('active');
         }
+
+        // Fechar modal ao clicar fora do conteúdo
+        window.addEventListener('click', (event) => {
+            if (event.target === document.getElementById('newsModal')) {
+                closeNewsModal();
+            }
+        });
     </script>
 </body>
 </html>
