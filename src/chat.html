@@ -23,8 +23,27 @@
       background-color: #8B0000;
       color: white;
       padding: 1rem;
-      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
       font-size: 1.4rem;
+    }
+
+    .header button {
+      background: white;
+      color: #8B0000;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .header button:hover {
+      background-color: #f0f0f0;
     }
 
     .tabs {
@@ -93,8 +112,8 @@
     }
 
     @media (max-width: 600px) {
-      .header {
-        font-size: 1.2rem;
+      .header h1 {
+        font-size: 1.1rem;
       }
 
       .tab {
@@ -113,11 +132,19 @@
       .input-container button {
         padding: 8px 12px;
       }
+
+      .header button {
+        padding: 4px 8px;
+        font-size: 0.8rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="header">Canal de Comunicação</div>
+  <div class="header">
+    <h1>Canal de Comunicação</h1>
+    <button onclick="window.location.href='news.html'">⬅ Notícias</button>
+  </div>
 
   <div class="tabs">
     <div class="tab active" onclick="switchChannel('adm', event)">ADM</div>
@@ -138,7 +165,12 @@
     let currentChannel = 'adm';
 
     function getUsername() {
-      return localStorage.getItem('username') || 'Usuário';
+      const username = localStorage.getItem('username');
+      if (!username) {
+        alert("Você precisa estar logado.");
+        window.location.href = "/index.html";
+      }
+      return username;
     }
 
     async function loadMessages() {
@@ -181,13 +213,7 @@
       loadMessages();
     }
 
-    // Inicializa com usuário logado
-    if (!localStorage.getItem("username")) {
-      const name = prompt("Digite seu nome para entrar no chat:");
-      localStorage.setItem("username", name || "Usuário");
-    }
-
-    // Inicialização
+    // Inicializa o chat
     loadMessages();
     setInterval(loadMessages, 5000);
   </script>
