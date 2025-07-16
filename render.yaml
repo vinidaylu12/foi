@@ -3,7 +3,7 @@ services:
     name: login-backend
     env: node
     plan: free
+    rootDir: back
     buildCommand: npm install
     startCommand: node server.js
-    rootDir: back
     autoDeploy: true
