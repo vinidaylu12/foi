@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: login-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    rootDir: back
+    autoDeploy: true
