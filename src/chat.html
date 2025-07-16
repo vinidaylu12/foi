@@ -24,7 +24,7 @@
       color: white;
       padding: 1rem;
       text-align: center;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
     }
 
     .tabs {
@@ -37,7 +37,7 @@
     .tab {
       flex: 1;
       text-align: center;
-      padding: 1rem;
+      padding: 0.8rem;
       cursor: pointer;
       font-weight: bold;
       color: #8B0000;
@@ -54,6 +54,7 @@
       flex-direction: column;
       padding: 1rem;
       overflow-y: auto;
+      scroll-behavior: smooth;
     }
 
     .message {
@@ -71,7 +72,7 @@
     .input-container {
       display: flex;
       border-top: 1px solid #ccc;
-      padding: 0.5rem;
+      padding: 0.6rem;
     }
 
     .input-container input {
@@ -86,7 +87,7 @@
       background-color: #8B0000;
       color: white;
       border: none;
-      padding: 10px 20px;
+      padding: 10px 16px;
       border-radius: 10px;
       cursor: pointer;
     }
@@ -97,7 +98,7 @@
       }
 
       .tab {
-        padding: 0.7rem;
+        padding: 0.6rem;
         font-size: 0.9rem;
       }
 
@@ -119,23 +120,26 @@
   <div class="header">Canal de Comunicação</div>
 
   <div class="tabs">
-    <div class="tab active" onclick="switchChannel('adm')">ADM</div>
-    <div class="tab" onclick="switchChannel('coordenacao')">Coordenação</div>
-    <div class="tab" onclick="switchChannel('gremio')">Grêmio</div>
+    <div class="tab active" onclick="switchChannel('adm', event)">ADM</div>
+    <div class="tab" onclick="switchChannel('coordenacao', event)">Coordenação</div>
+    <div class="tab" onclick="switchChannel('gremio', event)">Grêmio</div>
   </div>
 
   <div class="chat-container" id="chatBox">
-    <!-- Mensagens vão aqui -->
+    <!-- Mensagens aparecerão aqui -->
   </div>
 
   <div class="input-container">
-    <input type="text" id="username" placeholder="Seu nome" />
     <input type="text" id="message" placeholder="Digite uma mensagem..." />
     <button onclick="sendMessage()">Enviar</button>
   </div>
 
   <script>
     let currentChannel = 'adm';
+
+    function getUsername() {
+      return localStorage.getItem('username') || 'Usuário';
+    }
 
     async function loadMessages() {
       const res = await fetch(`/messages/${currentChannel}`);
@@ -155,10 +159,10 @@
     }
 
     async function sendMessage() {
-      const username = document.getElementById("username").value.trim();
+      const username = getUsername();
       const text = document.getElementById("message").value.trim();
 
-      if (!username || !text) return;
+      if (!text) return;
 
       await fetch(`/messages/${currentChannel}`, {
         method: "POST",
@@ -170,17 +174,21 @@
       loadMessages();
     }
 
-    function switchChannel(channel) {
+    function switchChannel(channel, event) {
       currentChannel = channel;
-      document.querySelectorAll(".tab").forEach((el) => el.classList.remove("active"));
+      document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
       event.target.classList.add("active");
       loadMessages();
     }
 
-    // Carrega mensagens ao iniciar
-    loadMessages();
+    // Inicializa com usuário logado
+    if (!localStorage.getItem("username")) {
+      const name = prompt("Digite seu nome para entrar no chat:");
+      localStorage.setItem("username", name || "Usuário");
+    }
 
-    // Atualiza a cada 5s
+    // Inicialização
+    loadMessages();
     setInterval(loadMessages, 5000);
   </script>
 </body>
