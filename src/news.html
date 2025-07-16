@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Notícias </title>
+    <title>Notícias</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -222,6 +222,7 @@
             color: #666;
             font-size: 18px;
             transition: var(--transition);
+            padding: 5px;
         }
 
         .like-button:hover {
@@ -231,6 +232,15 @@
 
         .like-button.liked {
             color: var(--primary-color);
+            animation: heartBeat 0.5s;
+        }
+
+        @keyframes heartBeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.2); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.2); }
+            100% { transform: scale(1); }
         }
 
         .likes-count {
@@ -325,7 +335,7 @@
             gap: 10px;
         }
 
-        .modal-content input, .modal-content select {
+        .modal-content input, .modal-content select, .modal-content textarea {
             width: 100%;
             padding: 12px;
             margin-bottom: 15px;
@@ -335,7 +345,12 @@
             transition: var(--transition);
         }
 
-        .modal-content input:focus, .modal-content select:focus {
+        .modal-content textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-content input:focus, .modal-content select:focus, .modal-content textarea:focus {
             border-color: var(--primary-color);
             outline: none;
             box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.1);
@@ -527,6 +542,12 @@
                 flex-direction: column;
             }
         }
+
+        /* Animações para alertas */
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -576,8 +597,8 @@
         <div class="modal-content">
             <h2><i class="fas fa-edit"></i> Nova Publicação</h2>
             <input type="text" id="newsTitle" placeholder="Título da notícia" required />
-            <textarea id="newsCaption" placeholder="Descrição da notícia" rows="3" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; resize: vertical;"></textarea>
-            <select id="mediaType" onchange="toggleMediaInput()" style="margin-bottom: 15px;">
+            <textarea id="newsCaption" placeholder="Descrição da notícia"></textarea>
+            <select id="mediaType" onchange="toggleMediaInput()">
                 <option value="image">Imagem</option>
                 <option value="video">Vídeo</option>
             </select>
@@ -645,7 +666,7 @@
                 return;
             }
 
-            if (user.role === "admin") {
+            if (user.username === "admin") {
                 document.getElementById("openModalButton").style.display = "block";
             }
 
@@ -660,7 +681,7 @@
             document.getElementById("openModalButton").addEventListener("click", () => {
                 if (isAdmin()) {
                     document.getElementById("publishModal").style.display = "flex";
-                    document.body.style.overflow = 'hidden'; // Impede scroll do body quando modal está aberto
+                    document.body.style.overflow = 'hidden';
                 } else {
                     showAlert("Apenas administradores podem publicar notícias!");
                 }
@@ -754,7 +775,7 @@
                             <button class="like-button ${isLiked ? 'liked' : ''}" onclick="toggleLike('${image.id}')">
                                 <i class="fas fa-heart"></i>
                             </button>
-                            <span class="likes-count" id="likes_${image.id}_count">${likes} curtidas</span>
+                            <span class="likes-count" id="likes_${image.id}_count">${likes} curtida${likes !== 1 ? 's' : ''}</span>
                         </div>
                         ${isAdmin() ? `
                         <button class="delete-button" onclick="deleteImage('${image.id}')">
@@ -810,7 +831,7 @@
         // Função para publicar notícia
         function publishNews() {
             const user = JSON.parse(sessionStorage.getItem("loggedInUser"));
-            if (!user || user.role !== "admin") {
+            if (!user || user.username !== "admin") {
                 showAlert("Apenas administradores podem publicar notícias!");
                 return;
             }
@@ -832,9 +853,11 @@
                 return;
             }
 
-            const newsData = { title, caption };
-            if (mediaUrl) newsData.url = mediaUrl;
-            if (mediaType === 'video') newsData.mediaType = 'video';
+            const newsData = { 
+                title, 
+                caption,
+                url: mediaUrl || ''
+            };
 
             fetch('/save-image', {
                 method: 'POST',
@@ -918,7 +941,10 @@
             fetch(`/like-post/${postId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ like: isLiked })
+                body: JSON.stringify({ 
+                    userId: user.username,
+                    like: isLiked 
+                })
             }).then(response => {
                 if (!response.ok) {
                     throw new Error('Erro ao atualizar curtida');
@@ -927,7 +953,7 @@
             }).then(data => {
                 const likesCount = document.getElementById(`likes_${postId}_count`);
                 if (likesCount) {
-                    likesCount.textContent = `${data.likes} curtidas`;
+                    likesCount.textContent = `${data.likes} curtida${data.likes !== 1 ? 's' : ''}`;
                 }
             }).catch(error => {
                 console.error("Erro ao curtir:", error);
@@ -937,6 +963,7 @@
                 if (likeButton) {
                     likeButton.classList.toggle('liked', !isLiked);
                 }
+                showAlert("Erro ao atualizar curtida. Tente novamente.");
             });
         }
 
@@ -948,7 +975,7 @@
                     Object.keys(curtidas).forEach(id => {
                         const span = document.getElementById(`likes_${id}_count`);
                         if (span) {
-                            span.textContent = `${curtidas[id]} curtidas`;
+                            span.textContent = `${curtidas[id]} curtida${curtidas[id] !== 1 ? 's' : ''}`;
                         }
                     });
                 })
@@ -986,7 +1013,7 @@
         // Funções auxiliares
         function isAdmin() {
             const user = JSON.parse(sessionStorage.getItem("loggedInUser"));
-            return user && user.role === "admin";
+            return user && user.username === "admin";
         }
 
         function closeModal() {
@@ -1021,4 +1048,4 @@
         };
     </script>
 </body>
-</html> faça os coraçoes funcionaram e salvarem em um .json
+</html>
