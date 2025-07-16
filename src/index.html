@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login •</title>
   <style>
     * {
@@ -19,44 +19,28 @@
 
     body {
       background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDw1_cQpF_nPSuc2oW71aOVcb0HuTnmeOFjw&s') no-repeat center center fixed;
-      background-size: cover;
+      background-size: auto;
+      background-repeat: no-repeat;
       display: flex;
       justify-content: center;
       align-items: center;
+      padding: 20px;
     }
 
     .container {
       display: flex;
-      width: 80%;
+      width: 90%;
       max-width: 900px;
-      height: 500px;
+      height: auto;
+      min-height: 500px;
       background-color: white;
       border-radius: 20px;
       overflow: hidden;
       box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+      flex-direction: row;
     }
 
-    .left {
-      flex: 1;
-      background: linear-gradient(135deg, #6e00ff, #ff6f61);
-      color: white;
-      padding: 60px 40px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .left h1 {
-      font-size: 36px;
-      margin-bottom: 20px;
-    }
-
-    .left p {
-      font-size: 18px;
-      line-height: 1.6;
-    }
-
-    .right {
+    .left, .right {
       flex: 1;
       padding: 40px;
       display: flex;
@@ -65,8 +49,24 @@
       align-items: center;
     }
 
+    .left {
+      background: linear-gradient(135deg, #6e00ff, #ff6f61);
+      color: white;
+      text-align: center;
+    }
+
+    .left h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+
+    .left p {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
     .right img {
-      width: 120px;
+      width: 160px;
       margin-bottom: 20px;
     }
 
@@ -87,7 +87,7 @@
     button {
       width: 100%;
       padding: 12px;
-      background: linear-gradient(135deg, #6e00ff, #ff6f61);
+      background: #8B0000;
       color: white;
       border: none;
       border-radius: 25px;
@@ -114,7 +114,7 @@
     }
 
     .register-link a {
-      color: #6e00ff;
+      color: #8B0000;
       text-decoration: none;
       font-weight: bold;
       cursor: pointer;
@@ -142,14 +142,15 @@
       background: white;
       padding: 20px;
       border-radius: 10px;
-      width: 300px;
+      width: 90%;
+      max-width: 320px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
     #registerModalContent img {
-      width: 100px;
+      width: 120px;
       margin-bottom: 15px;
     }
 
@@ -165,6 +166,34 @@
       color: red;
       margin-top: 10px;
       display: none;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .left, .right {
+        padding: 20px;
+      }
+
+      .left h1 {
+        font-size: 1.6rem;
+      }
+
+      .left p {
+        font-size: 0.95rem;
+      }
+
+      .right img {
+        width: 140px;
+      }
+
+      #registerModalContent img {
+        width: 140px;
+      }
     }
   </style>
 </head>
@@ -213,4 +242,3 @@
   <script src="/scripts/login.js"></script>
 </body>
 </html>
-
